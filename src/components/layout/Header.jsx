@@ -1,8 +1,9 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, memo } from 'react';
 import PropTypes from 'prop-types';
 import { Search, Sparkles, Menu, X } from 'lucide-react';
 import { COMPANY, NAV_LINKS } from '../../constants';
 import { useAIChat } from '../../context';
+import { useNavigation } from '../../hooks';
 
 /**
  * Header/AppBar component
@@ -10,13 +11,13 @@ import { useAIChat } from '../../context';
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
-  const toggleMobileMenu = () => {
-    setMobileMenuOpen(!mobileMenuOpen);
-  };
+  const toggleMobileMenu = useCallback(() => {
+    setMobileMenuOpen(prev => !prev);
+  }, []);
 
-  const closeMobileMenu = () => {
+  const closeMobileMenu = useCallback(() => {
     setMobileMenuOpen(false);
-  };
+  }, []);
 
   return (
     <header className="app-bar">
@@ -28,6 +29,7 @@ export function Header() {
           className="mobile-menu-toggle"
           onClick={toggleMobileMenu}
           aria-label={mobileMenuOpen ? 'Close menu' : 'Open menu'}
+          aria-expanded={mobileMenuOpen}
         >
           {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
@@ -41,35 +43,11 @@ export function Header() {
 /**
  * Navigation Menu with smooth scroll
  */
-function NavMenu({ onNavigate }) {
-  const handleNavClick = useCallback((e, href) => {
-    e.preventDefault();
-    const targetId = href.replace('#', '');
-    const targetElement = document.getElementById(targetId);
-    
-    if (targetElement) {
-      // Add highlighting animation to target section
-      targetElement.classList.add('section-highlight');
-      setTimeout(() => {
-        targetElement.classList.remove('section-highlight');
-      }, 1500);
-
-      // Smooth scroll with offset for header
-      const headerHeight = 80;
-      const elementPosition = targetElement.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
-    
-    if (onNavigate) onNavigate();
-  }, [onNavigate]);
+const NavMenu = memo(function NavMenu({ onNavigate }) {
+  const handleNavClick = useNavigation({ onNavigate });
 
   return (
-    <nav className="nav-menu">
+    <nav className="nav-menu" role="navigation" aria-label="Main navigation">
       {NAV_LINKS.map((link, index) => (
         <a
           key={link.href}
@@ -79,12 +57,12 @@ function NavMenu({ onNavigate }) {
           style={{ animationDelay: `${index * 50}ms` }}
         >
           <span className="nav-link-text">{link.label}</span>
-          <span className="nav-link-underline" />
+          <span className="nav-link-underline" aria-hidden="true" />
         </a>
       ))}
     </nav>
   );
-}
+});
 
 NavMenu.propTypes = {
   onNavigate: PropTypes.func,
@@ -93,34 +71,15 @@ NavMenu.propTypes = {
 /**
  * Mobile Navigation Menu
  */
-function MobileMenu({ isOpen, onNavigate }) {
-  const handleNavClick = useCallback((e, href) => {
-    e.preventDefault();
-    const targetId = href.replace('#', '');
-    const targetElement = document.getElementById(targetId);
-    
-    if (targetElement) {
-      targetElement.classList.add('section-highlight');
-      setTimeout(() => {
-        targetElement.classList.remove('section-highlight');
-      }, 1500);
-
-      const headerHeight = 80;
-      const elementPosition = targetElement.getBoundingClientRect().top;
-      const offsetPosition = elementPosition + window.pageYOffset - headerHeight;
-
-      window.scrollTo({
-        top: offsetPosition,
-        behavior: 'smooth'
-      });
-    }
-    
-    if (onNavigate) onNavigate();
-  }, [onNavigate]);
+const MobileMenu = memo(function MobileMenu({ isOpen, onNavigate }) {
+  const handleNavClick = useNavigation({ onNavigate });
 
   return (
-    <div className={`mobile-menu ${isOpen ? 'mobile-menu-open' : ''}`}>
-      <nav className="mobile-nav">
+    <div 
+      className={`mobile-menu ${isOpen ? 'mobile-menu-open' : ''}`}
+      aria-hidden={!isOpen}
+    >
+      <nav className="mobile-nav" role="navigation" aria-label="Mobile navigation">
         {NAV_LINKS.map((link, index) => (
           <a
             key={link.href}
@@ -128,6 +87,7 @@ function MobileMenu({ isOpen, onNavigate }) {
             className="mobile-nav-link"
             onClick={(e) => handleNavClick(e, link.href)}
             style={{ animationDelay: `${index * 80}ms` }}
+            tabIndex={isOpen ? 0 : -1}
           >
             {link.label}
           </a>
@@ -135,7 +95,7 @@ function MobileMenu({ isOpen, onNavigate }) {
       </nav>
     </div>
   );
-}
+});
 
 MobileMenu.propTypes = {
   isOpen: PropTypes.bool.isRequired,
@@ -145,49 +105,50 @@ MobileMenu.propTypes = {
 /**
  * Logo component with company branding
  */
-export function Logo() {
+export const Logo = memo(function Logo() {
   return (
-    <a href="/" className="app-title">
-      <img src="/logo.png" alt={COMPANY.name} className="logo" />
-      <span
-        style={{
-          fontSize: '24px',
-          fontWeight: '700',
-          marginLeft: '12px',
-          background: 'linear-gradient(135deg, #007af4, #00c6ff)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-        }}
-      >
+    <a href="/" className="app-title" aria-label={`${COMPANY.name} - Home`}>
+      <img 
+        src="/logo.png" 
+        alt="" 
+        className="logo" 
+        loading="eager"
+        width="150"
+        height="auto"
+      />
+      <span className="logo-text">
         {COMPANY.name}
       </span>
     </a>
   );
-}
+});
 
 /**
  * Search bar component for header - Opens AI Chat
  */
-export function SearchBar({ placeholder = 'Ask AI about our services...' }) {
+export const SearchBar = memo(function SearchBar({ placeholder = 'Ask AI about our services...' }) {
   const [inputValue, setInputValue] = useState('');
   const { openChat } = useAIChat();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = useCallback((e) => {
     e.preventDefault();
     openChat(inputValue.trim());
     setInputValue('');
-  };
+  }, [inputValue, openChat]);
 
-  const handleClick = () => {
+  const handleClick = useCallback(() => {
     if (!inputValue.trim()) {
       openChat('');
     }
-  };
+  }, [inputValue, openChat]);
+
+  const handleChange = useCallback((e) => {
+    setInputValue(e.target.value);
+  }, []);
 
   return (
     <form className="header-search shine" onSubmit={handleSubmit}>
-      <div className="header-ai-badge">
+      <div className="header-ai-badge" aria-hidden="true">
         <Sparkles size={12} />
       </div>
       <input
@@ -196,7 +157,7 @@ export function SearchBar({ placeholder = 'Ask AI about our services...' }) {
         placeholder={placeholder}
         aria-label="Ask AI"
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        onChange={handleChange}
         onClick={handleClick}
       />
       <button type="submit" className="header-search-button" aria-label="Search with AI">
@@ -204,7 +165,7 @@ export function SearchBar({ placeholder = 'Ask AI about our services...' }) {
       </button>
     </form>
   );
-}
+});
 
 SearchBar.propTypes = {
   placeholder: PropTypes.string,
@@ -213,13 +174,13 @@ SearchBar.propTypes = {
 /**
  * Progressive blur effect for header
  */
-function ProgressiveBlur() {
+const ProgressiveBlur = memo(function ProgressiveBlur() {
   return (
-    <div className="progressive-blur">
+    <div className="progressive-blur" aria-hidden="true">
       <div className="gradient" />
       <div className="blur-filter" />
     </div>
   );
-}
+});
 
 export default Header;

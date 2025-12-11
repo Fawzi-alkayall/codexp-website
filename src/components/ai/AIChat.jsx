@@ -127,7 +127,7 @@ const QUICK_SUGGESTIONS = [
  * Main AI Chat Component
  */
 export function AIChat({ isOpen, onClose, initialQuery = '' }) {
-  const { messages, addMessage, clearMessages, setMessages } = useAIChat();
+  const { messages, addMessage, clearMessages } = useAIChat();
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
@@ -293,6 +293,8 @@ function ChatHeader({ onClose, onClear, hasMessages }) {
 
 ChatHeader.propTypes = {
   onClose: PropTypes.func.isRequired,
+  onClear: PropTypes.func,
+  hasMessages: PropTypes.bool,
 };
 
 /**

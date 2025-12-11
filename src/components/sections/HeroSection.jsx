@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback, memo } from 'react';
 import { Search, Sparkles, Code2, Brain, Cpu, Terminal } from 'lucide-react';
 import { COMPANY } from '../../constants';
 import { useAIChat } from '../../context';
@@ -19,19 +19,22 @@ export function HeroSection() {
 }
 
 /**
+ * Floating icon configuration
+ */
+const FLOATING_ICONS = [
+  { Icon: Code2, delay: 0, position: { top: '15%', left: '10%' } },
+  { Icon: Brain, delay: 0.5, position: { top: '25%', right: '12%' } },
+  { Icon: Cpu, delay: 1, position: { bottom: '30%', left: '8%' } },
+  { Icon: Terminal, delay: 1.5, position: { bottom: '25%', right: '10%' } },
+];
+
+/**
  * Floating tech icons around the hero
  */
-function FloatingIcons() {
-  const icons = [
-    { Icon: Code2, delay: 0, position: { top: '15%', left: '10%' } },
-    { Icon: Brain, delay: 0.5, position: { top: '25%', right: '12%' } },
-    { Icon: Cpu, delay: 1, position: { bottom: '30%', left: '8%' } },
-    { Icon: Terminal, delay: 1.5, position: { bottom: '25%', right: '10%' } },
-  ];
-
+const FloatingIcons = memo(function FloatingIcons() {
   return (
     <div className="hero-floating-icons" aria-hidden="true">
-      {icons.map(({ Icon, delay, position }, index) => (
+      {FLOATING_ICONS.map(({ Icon, delay, position }, index) => (
         <div
           key={index}
           className="floating-icon"
@@ -45,18 +48,22 @@ function FloatingIcons() {
       ))}
     </div>
   );
-}
+});
 
 /**
  * Hero title with company name and typing effect
  */
 function HeroTitle() {
   const [displayText, setDisplayText] = useState('');
-  const fullText = COMPANY.name;
+  const fullText = useMemo(() => COMPANY.name, []);
   
   useEffect(() => {
     let index = 0;
+    let isMounted = true;
+    
     const timer = setInterval(() => {
+      if (!isMounted) return;
+      
       if (index <= fullText.length) {
         setDisplayText(fullText.slice(0, index));
         index++;
@@ -65,7 +72,10 @@ function HeroTitle() {
       }
     }, 150);
     
-    return () => clearInterval(timer);
+    return () => {
+      isMounted = false;
+      clearInterval(timer);
+    };
   }, [fullText]);
 
   return (
@@ -79,9 +89,9 @@ function HeroTitle() {
 /**
  * Hero description text
  */
-function HeroDescription() {
+const HeroDescription = memo(function HeroDescription() {
   return <p className="hero-description">{COMPANY.description}</p>;
-}
+});
 
 /**
  * Hero search input - AI powered
@@ -90,11 +100,18 @@ function HeroSearch() {
   const [inputValue, setInputValue] = useState('');
   const { openChat } = useAIChat();
 
-  const handleSubmit = (e) => {
+  const handleSubmit = useCallback((e) => {
     e.preventDefault();
-    openChat(inputValue.trim());
-    setInputValue('');
-  };
+    const query = inputValue.trim();
+    if (query || query === '') {
+      openChat(query);
+      setInputValue('');
+    }
+  }, [inputValue, openChat]);
+
+  const handleInputChange = useCallback((e) => {
+    setInputValue(e.target.value);
+  }, []);
 
   return (
     <form className="search-container shine" onSubmit={handleSubmit}>
@@ -108,7 +125,7 @@ function HeroSearch() {
         placeholder="How can we help your business today?"
         aria-label="Ask AI about our services"
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        onChange={handleInputChange}
       />
       <button type="submit" className="search-button" aria-label="Search with AI">
         <Search size={24} />
@@ -120,12 +137,12 @@ function HeroSearch() {
 /**
  * Hero background glow effect
  */
-function HeroBackground() {
+const HeroBackground = memo(function HeroBackground() {
   return (
     <div className="hero-background">
       <div className="hero-glow" />
     </div>
   );
-}
+});
 
 export default HeroSection;

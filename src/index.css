@@ -321,11 +321,20 @@ body {
   text-decoration: none; 
   display: flex;
   align-items: center;
+  gap: 12px;
 }
 .app-title .logo { 
   height: 44px; 
   width: 44px; 
   object-fit: contain;
+}
+.app-title .logo-text {
+  font-size: 24px;
+  font-weight: 700;
+  background: linear-gradient(135deg, var(--accent), #00c6ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }
 
 .header-search {
