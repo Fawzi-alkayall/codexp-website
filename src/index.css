@@ -8,8 +8,12 @@
   --on-accent: #8ab4f8;
   --accent-surface: #253145;
   --neutral: #818181;
-  --heading-font: "Inter", sans-serif;
-  --text-font: "Inter", sans-serif;
+  
+  /* Claude AI inspired font stack */
+  --heading-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --text-font: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  --serif-font: "Source Serif 4", Georgia, "Times New Roman", serif;
+  --mono-font: "JetBrains Mono", "Fira Code", "SF Mono", Monaco, "Cascadia Code", monospace;
 }
 
 .light-theme {
@@ -27,7 +31,13 @@ body {
   background: var(--surface);
   color: var(--on-surface);
   font-family: var(--text-font);
+  font-size: 16px;
+  line-height: 1.6;
+  letter-spacing: -0.011em;
+  font-feature-settings: "kern" 1, "liga" 1, "calt" 1;
   -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
   cursor: none; /* Hide default cursor on desktop */
 }
 
@@ -168,6 +178,7 @@ body {
   padding: 10px 16px;
   color: var(--neutral);
   text-decoration: none;
+  font-family: var(--text-font);
   font-size: 15px;
   font-weight: 500;
   border-radius: 8px;
@@ -256,6 +267,7 @@ body {
   padding: 16px 20px;
   color: var(--on-surface);
   text-decoration: none;
+  font-family: var(--text-font);
   font-size: 16px;
   font-weight: 500;
   border-radius: 12px;
@@ -349,6 +361,7 @@ body {
   border-radius: 38px;
   background: var(--surface);
   color: var(--on-surface);
+  font-family: var(--text-font);
   font-size: 16px;
   outline: none;
   cursor: pointer;
@@ -446,7 +459,7 @@ body {
 .hero-title-text {
   font-size: clamp(48px, 10vw, 120px);
   font-weight: 600;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   font-family: var(--heading-font);
   background: linear-gradient(135deg, var(--on-surface), var(--accent), var(--on-surface));
   background-size: 200% 200%;
@@ -467,26 +480,32 @@ body {
 .hero-section h1 {
   font-size: clamp(48px, 10vw, 120px);
   font-weight: 600;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.04em;
   margin-bottom: 24px;
   font-family: var(--heading-font);
 }
 
 .hero-description {
-  font-size: 20px;
+  font-family: var(--text-font);
+  font-size: 18px;
   color: var(--neutral);
-  max-width: 500px;
+  max-width: 540px;
   margin: 24px auto 48px;
-  line-height: 1.5;
+  line-height: 1.65;
+  font-weight: 400;
+  letter-spacing: -0.01em;
   animation: fadeInUp 1s ease-out 0.5s backwards;
 }
 
 .hero-section > p {
-  font-size: 20px;
+  font-family: var(--text-font);
+  font-size: 18px;
   color: var(--neutral);
-  max-width: 500px;
+  max-width: 540px;
   margin: 0 auto 48px;
-  line-height: 1.5;
+  line-height: 1.65;
+  font-weight: 400;
+  letter-spacing: -0.01em;
 }
 
 .search-container {
@@ -552,11 +571,12 @@ body {
 }
 
 .featured-section h2 {
-  font-size: clamp(32px, 5vw, 48px);
+  font-size: clamp(28px, 5vw, 42px);
   font-weight: 600;
   text-align: center;
   margin-bottom: 60px;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
+  font-family: var(--heading-font);
 }
 
 .repositories-grid {
@@ -594,9 +614,10 @@ body {
 }
 
 .repo-content h3 {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 600;
   color: var(--on-surface);
+  letter-spacing: -0.02em;
 }
 
 .repo-avatar {
@@ -609,7 +630,8 @@ body {
 .repo-description {
   color: var(--neutral);
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.6;
+  letter-spacing: -0.01em;
   flex: 1;
 }
 
@@ -618,7 +640,8 @@ body {
   align-items: center;
   gap: 6px;
   color: var(--neutral);
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
 }
 .star-count svg { color: var(--on-accent); }
 
@@ -633,16 +656,18 @@ body {
 .split-sections { display: flex; flex-direction: column; gap: 120px; }
 
 .split-section h2 {
-  font-size: clamp(28px, 4vw, 42px);
+  font-size: clamp(26px, 4vw, 38px);
   font-weight: 600;
-  letter-spacing: -0.02em;
+  letter-spacing: -0.03em;
   margin-bottom: 24px;
+  font-family: var(--heading-font);
 }
 
 .split-section > div > p {
   color: var(--neutral);
-  font-size: 18px;
-  line-height: 1.6;
+  font-size: 16px;
+  line-height: 1.7;
+  letter-spacing: -0.01em;
   max-width: 600px;
 }
 
@@ -659,7 +684,8 @@ body {
   background: var(--surface);
   padding: 6px 14px;
   border-radius: 19px;
-  font-size: 14px;
+  font-size: 13px;
+  font-weight: 500;
   color: var(--on-accent);
 }
 
@@ -684,9 +710,11 @@ body {
   display: flex;
   align-items: center;
   gap: 12px;
+  font-family: var(--heading-font);
   font-size: 18px;
   font-weight: 600;
   color: var(--on-surface);
+  letter-spacing: -0.01em;
 }
 .cta-title svg { flex-shrink: 0; }
 
@@ -707,15 +735,18 @@ body {
 }
 
 .icon-grid li span {
+  font-family: var(--heading-font);
   font-size: 18px;
   font-weight: 600;
   color: var(--on-surface);
+  letter-spacing: -0.01em;
 }
 
 .icon-grid li p {
-  font-size: 14px;
+  font-family: var(--text-font);
+  font-size: 15px;
   color: var(--neutral);
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .icon-wrapper {
@@ -885,10 +916,12 @@ body {
 .browser-section-cta-content svg { flex-shrink: 0; }
 
 .browser-section-cta-content p {
+  font-family: var(--heading-font);
   font-size: 18px;
   font-weight: 600;
   color: var(--on-surface);
   white-space: nowrap;
+  letter-spacing: -0.01em;
 }
 
 .browser-section-cta-content .arrow {
@@ -923,6 +956,7 @@ body {
 }
 
 .faq-subtitle {
+  font-family: var(--text-font);
   color: var(--neutral);
   font-size: 18px;
   line-height: 1.6;
@@ -1058,6 +1092,7 @@ body {
 }
 
 .faq-answer p {
+  font-family: var(--text-font);
   color: var(--neutral);
   font-size: 16px;
   line-height: 1.7;
@@ -1116,20 +1151,24 @@ body {
 }
 
 .faq-ai-text h3 {
+  font-family: var(--heading-font);
   font-size: 22px;
   font-weight: 600;
   color: var(--on-surface);
   margin-bottom: 8px;
+  letter-spacing: -0.02em;
 }
 
 .faq-ai-text p {
+  font-family: var(--text-font);
   color: var(--neutral);
   font-size: 15px;
-  line-height: 1.5;
+  line-height: 1.6;
   margin: 0;
 }
 
 .faq-ai-button {
+  font-family: var(--text-font);
   padding: 16px 32px;
   background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #a855f7));
   border: none;
@@ -1172,11 +1211,13 @@ body {
 .footer-logo img { width: 32px; height: 32px; object-fit: contain; }
 
 .footer-logo span {
+  font-family: var(--heading-font);
   font-weight: 600;
   color: var(--neutral);
 }
 
 .footer-content a {
+  font-family: var(--text-font);
   color: var(--neutral);
   text-decoration: none;
   font-size: 14px;
@@ -1255,15 +1296,18 @@ body {
 }
 
 .ai-chat-header h3 {
+  font-family: var(--heading-font);
   font-size: 16px;
   font-weight: 600;
   margin-bottom: 2px;
+  letter-spacing: -0.01em;
 }
 
 .ai-chat-status {
   display: flex;
   align-items: center;
   gap: 6px;
+  font-family: var(--text-font);
   font-size: 12px;
   color: var(--neutral);
 }
@@ -1330,11 +1374,14 @@ body {
 }
 
 .ai-chat-welcome h3 {
+  font-family: var(--heading-font);
   font-size: 20px;
   margin-bottom: 8px;
+  letter-spacing: -0.02em;
 }
 
 .ai-chat-welcome p {
+  font-family: var(--text-font);
   color: var(--neutral);
   font-size: 14px;
   max-width: 400px;
@@ -1349,6 +1396,7 @@ body {
 }
 
 .suggestions-label {
+  font-family: var(--text-font);
   font-size: 12px;
   color: var(--neutral);
   margin-bottom: 8px;
@@ -1363,6 +1411,7 @@ body {
   border-radius: 12px;
   padding: 12px 16px;
   color: var(--on-surface);
+  font-family: var(--text-font);
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
@@ -1437,6 +1486,7 @@ body {
 }
 
 .message-text {
+  font-family: var(--text-font);
   background: var(--accent-surface);
   padding: 12px 16px;
   border-radius: 16px;
@@ -1470,6 +1520,7 @@ body {
   color: white;
   padding: 10px 16px;
   border-radius: 10px;
+  font-family: var(--text-font);
   font-size: 13px;
   font-weight: 500;
   text-decoration: none;
@@ -1521,6 +1572,7 @@ body {
   border-radius: 12px;
   padding: 12px 16px;
   color: var(--on-surface);
+  font-family: var(--text-font);
   font-size: 14px;
   outline: none;
   transition: all 0.2s;
@@ -1675,6 +1727,7 @@ body {
   color: var(--on-surface);
   padding: 8px 16px;
   border-radius: 8px;
+  font-family: var(--text-font);
   font-size: 14px;
   font-weight: 500;
   white-space: nowrap;
