@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { ChevronDown, HelpCircle, MessageCircle } from 'lucide-react';
 import { Section, SectionTitle } from '../ui';
@@ -33,19 +33,47 @@ export function FAQSection() {
  */
 function FAQList({ faqs }) {
   const [openId, setOpenId] = useState(null);
+  const [previousId, setPreviousId] = useState(null);
+  const itemRefs = useRef({});
 
-  const toggleFAQ = (id) => {
+  const toggleFAQ = useCallback((id) => {
+    setPreviousId(openId);
     setOpenId(openId === id ? null : id);
-  };
+  }, [openId]);
+
+  // Auto-scroll to opened FAQ item
+  useEffect(() => {
+    if (openId && itemRefs.current[openId]) {
+      const element = itemRefs.current[openId];
+      const headerHeight = 100;
+      
+      setTimeout(() => {
+        const elementRect = element.getBoundingClientRect();
+        const isAboveViewport = elementRect.top < headerHeight;
+        const isBelowViewport = elementRect.bottom > window.innerHeight;
+        
+        if (isAboveViewport || isBelowViewport) {
+          const offsetPosition = element.getBoundingClientRect().top + window.pageYOffset - headerHeight;
+          window.scrollTo({
+            top: offsetPosition,
+            behavior: 'smooth'
+          });
+        }
+      }, 150);
+    }
+  }, [openId]);
 
   return (
     <div className="faq-list">
-      {faqs.map((faq) => (
+      {faqs.map((faq, index) => (
         <FAQItem
           key={faq.id}
+          ref={(el) => { itemRefs.current[faq.id] = el; }}
           faq={faq}
           isOpen={openId === faq.id}
+          wasOpen={previousId === faq.id}
           onToggle={() => toggleFAQ(faq.id)}
+          index={index}
         />
       ))}
     </div>
@@ -65,30 +93,59 @@ FAQList.propTypes = {
 /**
  * Single FAQ item with expand/collapse functionality
  */
-function FAQItem({ faq, isOpen, onToggle }) {
+import { forwardRef } from 'react';
+
+const FAQItem = forwardRef(function FAQItem({ faq, isOpen, wasOpen, onToggle, index }, ref) {
+  const answerRef = useRef(null);
+  const [height, setHeight] = useState(0);
+
+  useEffect(() => {
+    if (answerRef.current) {
+      setHeight(isOpen ? answerRef.current.scrollHeight : 0);
+    }
+  }, [isOpen]);
+
+  const itemClasses = [
+    'faq-item',
+    isOpen ? 'faq-item-open' : '',
+    wasOpen ? 'faq-item-closing' : '',
+    isOpen ? 'faq-item-entering' : ''
+  ].filter(Boolean).join(' ');
+
   return (
-    <div className={`faq-item ${isOpen ? 'faq-item-open' : ''}`}>
+    <div 
+      ref={ref}
+      className={itemClasses}
+      style={{ 
+        animationDelay: `${index * 50}ms`,
+        '--answer-height': `${height}px`
+      }}
+    >
       <button
         className="faq-question"
         onClick={onToggle}
         aria-expanded={isOpen}
         aria-controls={`faq-answer-${faq.id}`}
       >
-        <HelpCircle size={20} className="faq-icon" />
-        <span>{faq.question}</span>
+        <HelpCircle size={20} className={`faq-icon ${isOpen ? 'faq-icon-active' : ''}`} />
+        <span className="faq-question-text">{faq.question}</span>
         <ChevronDown size={20} className={`faq-chevron ${isOpen ? 'faq-chevron-open' : ''}`} />
       </button>
       <div
+        ref={answerRef}
         id={`faq-answer-${faq.id}`}
         className={`faq-answer ${isOpen ? 'faq-answer-open' : ''}`}
         role="region"
         aria-labelledby={`faq-question-${faq.id}`}
+        style={{ maxHeight: isOpen ? `${height}px` : '0' }}
       >
-        <p>{faq.answer}</p>
+        <div className="faq-answer-content">
+          <p>{faq.answer}</p>
+        </div>
       </div>
     </div>
   );
-}
+});
 
 FAQItem.propTypes = {
   faq: PropTypes.shape({
@@ -97,7 +154,9 @@ FAQItem.propTypes = {
     answer: PropTypes.string.isRequired,
   }).isRequired,
   isOpen: PropTypes.bool.isRequired,
+  wasOpen: PropTypes.bool,
   onToggle: PropTypes.func.isRequired,
+  index: PropTypes.number,
 };
 
 /**

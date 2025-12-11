@@ -30,6 +30,7 @@ import {
   AIChat,
   FloatingChatButton,
   MouseFollower,
+  AnimatedBackground,
 } from './components';
 import { AIChatProvider, useAIChat } from './context';
 
@@ -41,6 +42,7 @@ function App() {
   return (
     <AIChatProvider>
       <div className="app">
+        <AnimatedBackground />
         <MouseFollower />
         <Header />
         <Main />
