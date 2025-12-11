@@ -1,1 +1,1 @@
-export { AIChat } from './AIChat';
+export { AIChat, FloatingChatButton } from './AIChat';

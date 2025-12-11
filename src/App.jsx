@@ -28,6 +28,7 @@ import {
   CTASection,
   FAQSection,
   AIChat,
+  FloatingChatButton,
   MouseFollower,
 } from './components';
 import { AIChatProvider, useAIChat } from './context';
@@ -44,6 +45,7 @@ function App() {
         <Header />
         <Main />
         <Footer />
+        <FloatingChatButton />
         <GlobalAIChat />
       </div>
     </AIChatProvider>

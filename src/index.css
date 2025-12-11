@@ -1270,6 +1270,158 @@ body {
   cursor: not-allowed;
 }
 
+/* AI Chat Header Actions */
+.ai-chat-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ai-chat-clear-btn {
+  background: transparent;
+  border: none;
+  color: var(--neutral);
+  cursor: pointer;
+  padding: 8px;
+  border-radius: 8px;
+  transition: all 0.2s;
+}
+
+.ai-chat-clear-btn:hover {
+  background: rgba(255, 82, 82, 0.1);
+  color: #ff5252;
+}
+
+/* Floating Chat Button */
+.floating-chat-btn {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  border: none;
+  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #a855f7));
+  color: white;
+  cursor: pointer;
+  z-index: 1000;
+  box-shadow: 
+    0 4px 20px rgba(0, 122, 244, 0.4),
+    0 0 40px rgba(0, 122, 244, 0.2);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-chat-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 
+    0 6px 30px rgba(0, 122, 244, 0.5),
+    0 0 60px rgba(0, 122, 244, 0.3);
+}
+
+.floating-chat-btn:active {
+  transform: scale(0.95);
+}
+
+.floating-chat-btn-inner {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.floating-chat-btn-pulse {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background: var(--accent);
+  animation: floating-pulse 2s ease-out infinite;
+  opacity: 0;
+}
+
+@keyframes floating-pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}
+
+.floating-chat-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  min-width: 22px;
+  height: 22px;
+  padding: 0 6px;
+  background: linear-gradient(135deg, #ff5252, #ff1744);
+  color: white;
+  font-size: 12px;
+  font-weight: 700;
+  border-radius: 11px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(255, 23, 68, 0.4);
+  animation: badge-bounce 0.5s ease;
+}
+
+@keyframes badge-bounce {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+}
+
+.floating-chat-tooltip {
+  position: absolute;
+  right: calc(100% + 12px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: var(--surface);
+  color: var(--on-surface);
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  white-space: nowrap;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  border: 1px solid var(--accent-surface);
+  pointer-events: none;
+}
+
+.floating-chat-tooltip::after {
+  content: '';
+  position: absolute;
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border: 6px solid transparent;
+  border-left-color: var(--accent-surface);
+}
+
+.floating-chat-btn:hover .floating-chat-tooltip {
+  opacity: 1;
+  visibility: visible;
+}
+
+.floating-chat-btn.has-notification {
+  animation: notification-shake 0.5s ease-in-out;
+}
+
+@keyframes notification-shake {
+  0%, 100% { transform: rotate(0); }
+  25% { transform: rotate(-10deg); }
+  75% { transform: rotate(10deg); }
+}
+
 /* Responsive */
 @media (max-width: 768px) {
   .header-search { display: none; }
@@ -1326,5 +1478,17 @@ body {
   
   .faq-ai-button {
     width: 100%;
+  }
+  
+  /* Floating Chat Button Responsive */
+  .floating-chat-btn {
+    bottom: 16px;
+    right: 16px;
+    width: 56px;
+    height: 56px;
+  }
+  
+  .floating-chat-tooltip {
+    display: none;
   }
 }

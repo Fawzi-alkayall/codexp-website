@@ -1,7 +1,8 @@
 import { useState, useRef, useEffect } from 'react';
-import { Send, X, Bot, User, Sparkles, ArrowRight } from 'lucide-react';
+import { Send, X, Bot, User, Sparkles, ArrowRight, MessageCircle, Trash2 } from 'lucide-react';
 import PropTypes from 'prop-types';
 import { COMPANY, CONTACT, SERVICES, INDUSTRIES, FEATURES } from '../../constants';
+import { useAIChat } from '../../context';
 
 /**
  * AI Knowledge Base - Contains all information about CodeXp
@@ -126,11 +127,12 @@ const QUICK_SUGGESTIONS = [
  * Main AI Chat Component
  */
 export function AIChat({ isOpen, onClose, initialQuery = '' }) {
-  const [messages, setMessages] = useState([]);
+  const { messages, addMessage, clearMessages, setMessages } = useAIChat();
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
   const inputRef = useRef(null);
+  const initialQueryProcessed = useRef(false);
 
   // Scroll to bottom when new messages arrive
   useEffect(() => {
@@ -139,7 +141,8 @@ export function AIChat({ isOpen, onClose, initialQuery = '' }) {
 
   // Handle initial query from search
   useEffect(() => {
-    if (isOpen && initialQuery && messages.length === 0) {
+    if (isOpen && initialQuery && !initialQueryProcessed.current) {
+      initialQueryProcessed.current = true;
       handleSendMessage(initialQuery);
     }
     if (isOpen) {
@@ -147,10 +150,10 @@ export function AIChat({ isOpen, onClose, initialQuery = '' }) {
     }
   }, [isOpen, initialQuery]);
 
-  // Reset messages when closed
+  // Reset initial query flag when chat closes
   useEffect(() => {
     if (!isOpen) {
-      setMessages([]);
+      initialQueryProcessed.current = false;
       setInputValue('');
     }
   }, [isOpen]);
@@ -164,8 +167,9 @@ export function AIChat({ isOpen, onClose, initialQuery = '' }) {
       id: Date.now(),
       type: 'user',
       text: messageText,
+      timestamp: new Date().toISOString(),
     };
-    setMessages(prev => [...prev, userMessage]);
+    addMessage(userMessage);
     setInputValue('');
     setIsTyping(true);
 
@@ -179,9 +183,10 @@ export function AIChat({ isOpen, onClose, initialQuery = '' }) {
       type: 'ai',
       text: response.text,
       meta: response,
+      timestamp: new Date().toISOString(),
     };
     
-    setMessages(prev => [...prev, aiMessage]);
+    addMessage(aiMessage);
     setIsTyping(false);
   };
 
@@ -199,7 +204,7 @@ export function AIChat({ isOpen, onClose, initialQuery = '' }) {
   return (
     <div className="ai-chat-overlay">
       <div className="ai-chat-container">
-        <ChatHeader onClose={onClose} />
+        <ChatHeader onClose={onClose} onClear={clearMessages} hasMessages={messages.length > 0} />
         
         <div className="ai-chat-messages">
           {messages.length === 0 && (
@@ -248,7 +253,7 @@ AIChat.propTypes = {
 /**
  * Chat Header Component
  */
-function ChatHeader({ onClose }) {
+function ChatHeader({ onClose, onClear, hasMessages }) {
   return (
     <div className="ai-chat-header">
       <div className="ai-chat-header-info">
@@ -263,13 +268,25 @@ function ChatHeader({ onClose }) {
           </span>
         </div>
       </div>
-      <button 
-        className="ai-chat-close-btn" 
-        onClick={onClose}
-        aria-label="Close chat"
-      >
-        <X size={24} />
-      </button>
+      <div className="ai-chat-header-actions">
+        {hasMessages && (
+          <button 
+            className="ai-chat-clear-btn" 
+            onClick={onClear}
+            aria-label="Clear chat history"
+            title="Clear chat history"
+          >
+            <Trash2 size={18} />
+          </button>
+        )}
+        <button 
+          className="ai-chat-close-btn" 
+          onClick={onClose}
+          aria-label="Close chat"
+        >
+          <X size={24} />
+        </button>
+      </div>
     </div>
   );
 }
@@ -406,6 +423,39 @@ function formatMessageText(text) {
       </span>
     );
   });
+}
+
+/**
+ * Floating Chat Button Component
+ * Shows a persistent chat icon that opens the AI assistant
+ */
+export function FloatingChatButton() {
+  const { openChat, isOpen, hasUnreadMessages, messages } = useAIChat();
+  
+  // Don't show the button when chat is open
+  if (isOpen) return null;
+  
+  return (
+    <button 
+      className={`floating-chat-btn ${hasUnreadMessages ? 'has-notification' : ''}`}
+      onClick={() => openChat('')}
+      aria-label="Open AI Chat Assistant"
+      title="Chat with AI Assistant"
+    >
+      <div className="floating-chat-btn-inner">
+        <MessageCircle size={28} />
+        <span className="floating-chat-btn-pulse"></span>
+      </div>
+      {(hasUnreadMessages || messages.length > 0) && (
+        <span className="floating-chat-badge">
+          {messages.length > 0 ? Math.ceil(messages.length / 2) : '!'}
+        </span>
+      )}
+      <span className="floating-chat-tooltip">
+        {messages.length > 0 ? 'Continue conversation' : 'Ask AI Assistant'}
+      </span>
+    </button>
+  );
 }
 
 export default AIChat;
