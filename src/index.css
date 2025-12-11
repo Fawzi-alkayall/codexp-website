@@ -2397,8 +2397,14 @@ button:hover::before,
   
   .hero-section h1 {
     animation: fadeInUp 0.8s ease-out;
-    background: var(--on-surface);
-    -webkit-text-fill-color: var(--on-surface);
+  }
+  
+  .hero-title-text {
+    background: linear-gradient(135deg, var(--on-surface), var(--accent), var(--on-surface));
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
   }
   
   .search-container::before {
