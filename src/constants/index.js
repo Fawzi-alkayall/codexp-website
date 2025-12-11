@@ -27,6 +27,7 @@ export const NAV_LINKS = [
   { label: 'About', href: '#about' },
   { label: 'Services', href: '#services' },
   { label: 'Industries', href: '#industries' },
+  { label: 'FAQ', href: '#faq' },
   { label: 'Contact', href: '#contact' },
 ];
 
@@ -117,6 +118,50 @@ export const FEATURES = [
     icon: 'Users',
     title: 'Dedicated Support',
     description: '24/7 support and maintenance to keep your systems running smoothly.',
+  },
+];
+
+// FAQ Data
+export const FAQS = [
+  {
+    id: 'what-services',
+    question: 'What services does CodeXp offer?',
+    answer: 'CodeXp offers a comprehensive range of software development services including web development, mobile applications, AI & machine learning solutions, data analytics, IT consulting, and training programs. We specialize in building custom solutions tailored to your business needs.',
+  },
+  {
+    id: 'technologies',
+    question: 'What technologies do you work with?',
+    answer: 'We work with modern technologies including React, Flutter, Node.js, Python, cloud platforms (AWS, Google Cloud, Azure), and AI/ML frameworks. We choose the best technology stack based on your project requirements and business goals.',
+  },
+  {
+    id: 'project-timeline',
+    question: 'How long does a typical project take?',
+    answer: 'Project timelines vary based on complexity and scope. A simple website might take 2-4 weeks, while a complex enterprise application could take 3-6 months. We provide detailed timelines during our initial consultation after understanding your requirements.',
+  },
+  {
+    id: 'pricing',
+    question: 'How do you price your services?',
+    answer: 'We offer flexible pricing models including fixed-price projects, hourly rates, and retainer agreements. After an initial consultation to understand your needs, we provide a detailed proposal with transparent pricing. Contact us for a free quote.',
+  },
+  {
+    id: 'support',
+    question: 'Do you provide ongoing support and maintenance?',
+    answer: 'Yes! We offer comprehensive support and maintenance packages to ensure your applications run smoothly. This includes bug fixes, security updates, performance optimization, and feature enhancements. Our support team is available 24/7.',
+  },
+  {
+    id: 'location',
+    question: 'Where is CodeXp located?',
+    answer: 'CodeXp (First Creators for Technology L.L.C) is headquartered in Amman, Jordan. However, we work with clients globally and have experience delivering projects for businesses across the Middle East, Europe, and North America.',
+  },
+  {
+    id: 'start-project',
+    question: 'How do I start a project with CodeXp?',
+    answer: 'Getting started is easy! Simply contact us via email at developer@codexp.co or call us at +962 7 9900 6608. We\'ll schedule a free consultation to discuss your project, understand your requirements, and provide a tailored solution.',
+  },
+  {
+    id: 'communication',
+    question: 'How do you handle project communication?',
+    answer: 'We believe in transparent and regular communication. You\'ll have a dedicated project manager, access to project tracking tools, regular progress updates, and direct communication channels with our development team. We use tools like Slack, Jira, and regular video calls.',
   },
 ];
 

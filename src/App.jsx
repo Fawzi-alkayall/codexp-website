@@ -26,6 +26,7 @@ import {
   AboutSection,
   IndustriesSection,
   CTASection,
+  FAQSection,
   AIChat,
   MouseFollower,
 } from './components';
@@ -60,6 +61,7 @@ function Main() {
       <AboutSection />
       <ServicesSection />
       <IndustriesSection />
+      <FAQSection />
       <CTASection />
     </main>
   );
