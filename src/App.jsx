@@ -8,13 +8,14 @@
  * - /components/layout - Layout components (Header, Footer, Container)
  * - /components/sections - Page sections (Hero, Services, About, Industries, CTA)
  * - /components/ai - AI-powered components (AIChat)
+ * - /components/effects - Visual effects (MouseFollower)
  * - /context - React Context providers (AIChatContext)
  * - /constants - Static data and configuration
  * - /hooks - Custom React hooks
  * - /utils - Utility functions
  * 
  * @author CodeXp Team
- * @version 2.1.0
+ * @version 2.2.0
  */
 
 import {
@@ -26,6 +27,7 @@ import {
   IndustriesSection,
   CTASection,
   AIChat,
+  MouseFollower,
 } from './components';
 import { AIChatProvider, useAIChat } from './context';
 
@@ -37,6 +39,7 @@ function App() {
   return (
     <AIChatProvider>
       <div className="app">
+        <MouseFollower />
         <Header />
         <Main />
         <Footer />

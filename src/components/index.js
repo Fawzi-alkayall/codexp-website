@@ -9,3 +9,6 @@ export * from './sections';
 
 // AI Components
 export * from './ai';
+
+// Effects Components
+export * from './effects';

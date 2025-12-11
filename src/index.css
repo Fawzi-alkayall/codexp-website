@@ -28,6 +28,12 @@ body {
   color: var(--on-surface);
   font-family: var(--text-font);
   -webkit-font-smoothing: antialiased;
+  cursor: none; /* Hide default cursor on desktop */
+}
+
+/* Show default cursor on touch devices */
+@media (hover: none) and (pointer: coarse) {
+  body { cursor: auto; }
 }
 
 .app {
@@ -39,6 +45,76 @@ body {
 .app-main {
   flex: 1;
   padding: 0 24px;
+}
+
+/* Mouse Follower / Cursor Effect */
+.mouse-cursor-inner,
+.mouse-cursor-outer {
+  position: fixed;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  z-index: 9999;
+  opacity: 0;
+  transition: opacity 0.3s ease, width 0.3s ease, height 0.3s ease, background 0.3s ease;
+  will-change: transform;
+}
+
+.mouse-cursor-inner {
+  width: 8px;
+  height: 8px;
+  margin-left: -4px;
+  margin-top: -4px;
+  background: var(--on-surface);
+  border-radius: 50%;
+  mix-blend-mode: difference;
+}
+
+.mouse-cursor-outer {
+  width: 40px;
+  height: 40px;
+  margin-left: -20px;
+  margin-top: -20px;
+  background: radial-gradient(circle, 
+    rgba(0, 122, 244, 0.4) 0%, 
+    rgba(0, 122, 244, 0.1) 40%, 
+    transparent 70%);
+  border-radius: 50%;
+  filter: blur(2px);
+}
+
+.mouse-cursor-inner.visible,
+.mouse-cursor-outer.visible {
+  opacity: 1;
+}
+
+.mouse-cursor-inner.hovering {
+  width: 12px;
+  height: 12px;
+  margin-left: -6px;
+  margin-top: -6px;
+  background: var(--accent);
+  mix-blend-mode: normal;
+}
+
+.mouse-cursor-outer.hovering {
+  width: 60px;
+  height: 60px;
+  margin-left: -30px;
+  margin-top: -30px;
+  background: radial-gradient(circle, 
+    rgba(0, 122, 244, 0.6) 0%, 
+    rgba(0, 198, 255, 0.3) 30%, 
+    transparent 70%);
+  filter: blur(4px);
+}
+
+/* Hide cursor effect on mobile */
+@media (hover: none) and (pointer: coarse) {
+  .mouse-cursor-inner,
+  .mouse-cursor-outer {
+    display: none !important;
+  }
 }
 
 /* Shine Animation */
