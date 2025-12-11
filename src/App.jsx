@@ -1,7 +1,4 @@
-import { useState } from 'react';
 import { 
-  Sun, 
-  Moon, 
   Search, 
   ArrowRight,
   Code2,
@@ -19,15 +16,9 @@ import {
 } from 'lucide-react';
 
 function App() {
-  const [isDark, setIsDark] = useState(true);
-
-  const toggleTheme = () => {
-    setIsDark(!isDark);
-  };
-
   return (
-    <div className={`app ${isDark ? '' : 'light-theme'}`}>
-      <AppBar isDark={isDark} toggleTheme={toggleTheme} />
+    <div className="app">
+      <AppBar />
       <main className="app-main">
         <HeroSection />
         <AboutSection />
@@ -40,7 +31,7 @@ function App() {
   );
 }
 
-function AppBar({ isDark, toggleTheme }) {
+function AppBar() {
   return (
     <header className="app-bar">
       <div className="header-content">
@@ -65,12 +56,6 @@ function AppBar({ isDark, toggleTheme }) {
           />
           <button className="header-search-button">
             <Search size={20} />
-          </button>
-        </div>
-
-        <div className="actions">
-          <button className="theme-button" onClick={toggleTheme}>
-            {isDark ? <Sun size={20} /> : <Moon size={20} />}
           </button>
         </div>
       </div>
