@@ -1,0 +1,14 @@
+/* TEAM */
+
+Company: CodeXp - First Creators for Technology L.L.C
+Contact: developer@codexp.co
+Location: Amman, Jordan
+Phone: +962 7 9900 6608
+
+/* SITE */
+
+Last update: 2024/12/12
+Language: English
+Standards: HTML5, CSS3, ES6+
+Framework: React 18, Vite
+Hosting: Vercel
