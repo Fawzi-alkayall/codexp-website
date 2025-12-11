@@ -1,8 +1,10 @@
-import { Search } from 'lucide-react';
+import { useState } from 'react';
+import { Search, Sparkles } from 'lucide-react';
 import { COMPANY } from '../../constants';
+import { useAIChat } from '../../context';
 
 /**
- * Hero section - Main landing section
+ * Hero section - Main landing section with AI-powered search
  */
 export function HeroSection() {
   return (
@@ -30,23 +32,33 @@ function HeroDescription() {
 }
 
 /**
- * Hero search input
+ * Hero search input - AI powered
  */
 function HeroSearch() {
+  const [inputValue, setInputValue] = useState('');
+  const { openChat } = useAIChat();
+
   const handleSubmit = (e) => {
     e.preventDefault();
-    // Handle search submission
+    openChat(inputValue.trim());
+    setInputValue('');
   };
 
   return (
     <form className="search-container shine" onSubmit={handleSubmit}>
+      <div className="search-ai-badge">
+        <Sparkles size={14} />
+        <span>AI</span>
+      </div>
       <input
         type="text"
         className="search-input"
-        placeholder="How can we help you today?"
-        aria-label="Search for services"
+        placeholder="How can we help your business today?"
+        aria-label="Ask AI about our services"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
       />
-      <button type="submit" className="search-button" aria-label="Search">
+      <button type="submit" className="search-button" aria-label="Search with AI">
         <Search size={24} />
       </button>
     </form>

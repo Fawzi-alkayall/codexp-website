@@ -1,6 +1,8 @@
+import { useState } from 'react';
 import PropTypes from 'prop-types';
-import { Search } from 'lucide-react';
+import { Search, Sparkles } from 'lucide-react';
 import { COMPANY } from '../../constants';
+import { useAIChat } from '../../context';
 
 /**
  * Header/AppBar component
@@ -42,21 +44,42 @@ export function Logo() {
 }
 
 /**
- * Search bar component for header
+ * Search bar component for header - Opens AI Chat
  */
-export function SearchBar({ placeholder = 'Search services...' }) {
+export function SearchBar({ placeholder = 'Ask AI about our services...' }) {
+  const [inputValue, setInputValue] = useState('');
+  const { openChat } = useAIChat();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    openChat(inputValue.trim());
+    setInputValue('');
+  };
+
+  const handleClick = () => {
+    if (!inputValue.trim()) {
+      openChat('');
+    }
+  };
+
   return (
-    <div className="header-search shine">
+    <form className="header-search shine" onSubmit={handleSubmit}>
+      <div className="header-ai-badge">
+        <Sparkles size={12} />
+      </div>
       <input
         type="text"
         className="header-search-input"
         placeholder={placeholder}
-        aria-label="Search"
+        aria-label="Ask AI"
+        value={inputValue}
+        onChange={(e) => setInputValue(e.target.value)}
+        onClick={handleClick}
       />
-      <button className="header-search-button" aria-label="Search">
+      <button type="submit" className="header-search-button" aria-label="Search with AI">
         <Search size={20} />
       </button>
-    </div>
+    </form>
   );
 }
 

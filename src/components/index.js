@@ -6,3 +6,6 @@ export * from './layout';
 
 // Section Components
 export * from './sections';
+
+// AI Components
+export * from './ai';
