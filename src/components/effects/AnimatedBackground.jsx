@@ -160,7 +160,7 @@ export function AnimatedBackground() {
         ctx.fillStyle = `rgba(0, 122, 244, ${this.currentOpacity})`;
         ctx.fill();
         
-        // Glow effect - very subtle
+        // Glow effect
         ctx.beginPath();
         ctx.arc(this.x, this.y, this.radius * 2, 0, Math.PI * 2);
         const gradient = ctx.createRadialGradient(
@@ -185,8 +185,8 @@ export function AnimatedBackground() {
         this.y = canvas.height + 50;
         this.baseX = this.x;
         this.baseY = this.y;
-        this.vy = -(Math.random() * 0.5 + 0.2);
-        this.vx = (Math.random() - 0.5) * 0.2;
+        this.vy = -(Math.random() * 0.8 + 0.3);
+        this.vx = (Math.random() - 0.5) * 0.3;
         this.symbol = codeSymbols[Math.floor(Math.random() * codeSymbols.length)];
         this.fontSize = Math.random() * 8 + 6;
         this.baseFontSize = this.fontSize;
@@ -296,7 +296,7 @@ export function AnimatedBackground() {
           const distance = Math.sqrt(dx * dx + dy * dy);
           
           if (distance < maxDistance) {
-            let opacity = (1 - distance / maxDistance) * 0.12;
+            let opacity = (1 - distance / maxDistance) * 0.06;
             
             // Brighten connections near mouse
             if (mouseRef.current.isActive && smoothMouse.x !== null) {
@@ -308,7 +308,7 @@ export function AnimatedBackground() {
               );
               if (mouseDist < mouseRadius) {
                 const mouseInfluence = 1 - mouseDist / mouseRadius;
-                opacity = Math.min(0.25, opacity + mouseInfluence * 0.12);
+                opacity = Math.min(0.15, opacity + mouseInfluence * 0.08);
               }
             }
             
@@ -316,7 +316,7 @@ export function AnimatedBackground() {
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
             ctx.strokeStyle = `rgba(0, 122, 244, ${opacity})`;
-            ctx.lineWidth = 0.4;
+            ctx.lineWidth = 0.3;
             ctx.stroke();
           }
         }
