@@ -70,9 +70,9 @@ export function AnimatedBackground() {
       mouseRef.current.isActive = false;
     };
     
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     window.addEventListener('mouseleave', handleMouseLeave);
-    window.addEventListener('touchmove', handleTouchMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
     window.addEventListener('touchend', handleTouchEnd);
 
     // Particle class for neural network effect with parallax depth
@@ -377,9 +377,9 @@ export function AnimatedBackground() {
       }
     }
 
-    // Initialize particles
-    const particleCount = Math.min(80, Math.floor((canvas.width * canvas.height) / 15000));
-    const codeParticleCount = Math.min(30, Math.floor((canvas.width * canvas.height) / 40000));
+    // Initialize particles - REDUCED for better performance
+    const particleCount = Math.min(40, Math.floor((canvas.width * canvas.height) / 25000));
+    const codeParticleCount = Math.min(15, Math.floor((canvas.width * canvas.height) / 80000));
     
     for (let i = 0; i < particleCount; i++) {
       particles.push(new Particle());
@@ -392,29 +392,33 @@ export function AnimatedBackground() {
       codeParticles.push(particle);
     }
 
-    // Draw connections between nearby particles
+    // Draw connections between nearby particles - OPTIMIZED
     const drawConnections = () => {
       const maxDistance = 120;
+      const maxDistanceSq = maxDistance * maxDistance;
       
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
           const dx = particles[i].x - particles[j].x;
           const dy = particles[i].y - particles[j].y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          const distanceSq = dx * dx + dy * dy;
           
-          if (distance < maxDistance) {
-            let opacity = (1 - distance / maxDistance) * 0.2;
+          // Skip sqrt if clearly out of range
+          if (distanceSq > maxDistanceSq) continue;
+          
+          const distance = Math.sqrt(distanceSq);
+          let opacity = (1 - distance / maxDistance) * 0.2;
             
             // Brighten connections near mouse
             if (mouseRef.current.isActive && smoothMouse.x !== null) {
               const midX = (particles[i].x + particles[j].x) / 2;
               const midY = (particles[i].y + particles[j].y) / 2;
-              const mouseDist = Math.sqrt(
-                Math.pow(midX - smoothMouse.x, 2) + 
-                Math.pow(midY - smoothMouse.y, 2)
-              );
-              if (mouseDist < mouseRadius) {
-                const mouseInfluence = 1 - mouseDist / mouseRadius;
+              const mouseDistSq = 
+                (midX - smoothMouse.x) * (midX - smoothMouse.x) + 
+                (midY - smoothMouse.y) * (midY - smoothMouse.y);
+              const mouseRadiusSq = mouseRadius * mouseRadius;
+              if (mouseDistSq < mouseRadiusSq) {
+                const mouseInfluence = 1 - Math.sqrt(mouseDistSq) / mouseRadius;
                 opacity = Math.min(0.4, opacity + mouseInfluence * 0.15);
               }
             }
@@ -425,7 +429,6 @@ export function AnimatedBackground() {
             ctx.strokeStyle = `rgba(0, 122, 244, ${opacity})`;
             ctx.lineWidth = 0.5;
             ctx.stroke();
-          }
         }
       }
       

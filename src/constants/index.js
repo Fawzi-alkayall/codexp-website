@@ -4,7 +4,7 @@ export const COMPANY = {
   fullName: 'First Creators for Technology L.L.C',
   tagline: 'Code Experts',
   description: 'Transforming ideas into powerful digital solutions. We build innovative software that drives business growth.',
-  founded: 2020,
+  founded: 2025,
 };
 
 // Contact Information

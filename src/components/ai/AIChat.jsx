@@ -435,10 +435,16 @@ export function FloatingChatButton() {
   const { openChat, isOpen, hasUnreadMessages, messages } = useAIChat();
   const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
   const buttonRef = useRef(null);
+  const lastUpdateRef = useRef(0);
   
-  // Track mouse movement for eye animation
+  // Track mouse movement for eye animation - THROTTLED for performance
   useEffect(() => {
     const handleMouseMove = (e) => {
+      // Throttle updates to ~30fps (33ms)
+      const now = Date.now();
+      if (now - lastUpdateRef.current < 33) return;
+      lastUpdateRef.current = now;
+      
       if (!buttonRef.current) return;
       
       const button = buttonRef.current;
@@ -451,7 +457,8 @@ export function FloatingChatButton() {
       const deltaY = e.clientY - buttonCenterY;
       
       // Normalize and limit eye movement (max 3px movement)
-      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const distanceSq = deltaX * deltaX + deltaY * deltaY;
+      const distance = Math.sqrt(distanceSq);
       const maxMove = 3;
       const normalizedX = distance > 0 ? (deltaX / distance) * Math.min(maxMove, distance / 50) : 0;
       const normalizedY = distance > 0 ? (deltaY / distance) * Math.min(maxMove, distance / 50) : 0;
@@ -459,7 +466,7 @@ export function FloatingChatButton() {
       setEyePosition({ x: normalizedX, y: normalizedY });
     };
     
-    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('mousemove', handleMouseMove, { passive: true });
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
   
@@ -475,55 +482,73 @@ export function FloatingChatButton() {
       title="Chat with AI Assistant"
     >
       <div className="floating-chat-btn-inner">
-        {/* Robot SVG with animated eyes */}
+        {/* Modern AI Assistant Robot - Sleek & Minimal with glowing visor */}
         <svg 
-          width="32" 
-          height="32" 
-          viewBox="0 0 32 32" 
+          width="44" 
+          height="44" 
+          viewBox="0 0 44 44" 
           fill="none" 
           xmlns="http://www.w3.org/2000/svg"
           className="robot-icon"
         >
-          {/* Antenna */}
-          <circle cx="16" cy="4" r="2" fill="currentColor" opacity="0.8"/>
-          <line x1="16" y1="6" x2="16" y2="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          {/* Glow filter for visor */}
+          <defs>
+            <filter id="visorGlow" x="-50%" y="-50%" width="200%" height="200%">
+              <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+              <feMerge>
+                <feMergeNode in="coloredBlur"/>
+                <feMergeNode in="SourceGraphic"/>
+              </feMerge>
+            </filter>
+            <linearGradient id="visorGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+              <stop offset="0%" stopColor="#00c6ff"/>
+              <stop offset="50%" stopColor="#007af4"/>
+              <stop offset="100%" stopColor="#00c6ff"/>
+            </linearGradient>
+          </defs>
           
-          {/* Robot Head */}
-          <rect x="6" y="10" width="20" height="16" rx="4" fill="currentColor" opacity="0.15"/>
-          <rect x="6" y="10" width="20" height="16" rx="4" stroke="currentColor" strokeWidth="1.5"/>
+          {/* Robot Head - Sleek rounded rectangle */}
+          <rect x="8" y="10" width="28" height="24" rx="6" fill="currentColor" opacity="0.12"/>
+          <rect x="8" y="10" width="28" height="24" rx="6" stroke="currentColor" strokeWidth="1.5" opacity="0.6"/>
           
-          {/* Left Eye Socket */}
-          <circle cx="11" cy="18" r="4" fill="currentColor" opacity="0.1"/>
-          <circle cx="11" cy="18" r="4" stroke="currentColor" strokeWidth="1"/>
+          {/* Visor/Eye Bar - Glowing horizontal bar */}
+          <rect 
+            x="12" 
+            y="18" 
+            width="20" 
+            height="6" 
+            rx="3" 
+            fill="url(#visorGradient)"
+            filter="url(#visorGlow)"
+            className="robot-visor"
+          />
           
-          {/* Left Eye Pupil - Animated */}
+          {/* Eye pupils inside visor - Animated */}
           <circle 
-            cx={11 + eyePosition.x} 
-            cy={18 + eyePosition.y} 
+            cx={17 + eyePosition.x * 1.5} 
+            cy={21 + eyePosition.y * 0.8} 
             r="2" 
-            fill="currentColor"
+            fill="white"
+            className="robot-eye-pupil"
+          />
+          <circle 
+            cx={27 + eyePosition.x * 1.5} 
+            cy={21 + eyePosition.y * 0.8} 
+            r="2" 
+            fill="white"
             className="robot-eye-pupil"
           />
           
-          {/* Right Eye Socket */}
-          <circle cx="21" cy="18" r="4" fill="currentColor" opacity="0.1"/>
-          <circle cx="21" cy="18" r="4" stroke="currentColor" strokeWidth="1"/>
+          {/* Subtle chin detail */}
+          <rect x="18" y="28" width="8" height="2" rx="1" fill="currentColor" opacity="0.3"/>
           
-          {/* Right Eye Pupil - Animated */}
-          <circle 
-            cx={21 + eyePosition.x} 
-            cy={18 + eyePosition.y} 
-            r="2" 
-            fill="currentColor"
-            className="robot-eye-pupil"
-          />
+          {/* Side accents */}
+          <rect x="5" y="16" width="3" height="10" rx="1.5" fill="currentColor" opacity="0.25"/>
+          <rect x="36" y="16" width="3" height="10" rx="1.5" fill="currentColor" opacity="0.25"/>
           
-          {/* Mouth/Speaker grille */}
-          <rect x="10" y="24" width="12" height="1" rx="0.5" fill="currentColor" opacity="0.6"/>
-          
-          {/* Ear panels */}
-          <rect x="3" y="14" width="3" height="8" rx="1" fill="currentColor" opacity="0.3"/>
-          <rect x="26" y="14" width="3" height="8" rx="1" fill="currentColor" opacity="0.3"/>
+          {/* Top antenna indicator */}
+          <circle cx="22" cy="7" r="2.5" fill="url(#visorGradient)" filter="url(#visorGlow)" opacity="0.8"/>
+          <line x1="22" y1="9.5" x2="22" y2="10" stroke="currentColor" strokeWidth="1.5" opacity="0.4"/>
         </svg>
         <span className="floating-chat-btn-pulse"></span>
       </div>

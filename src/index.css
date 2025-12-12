@@ -1786,17 +1786,14 @@ body {
   position: fixed;
   bottom: 24px;
   right: 24px;
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
+  width: 56px;
+  height: 56px;
+  border-radius: 12px;
   border: none;
-  background: linear-gradient(135deg, var(--accent), color-mix(in srgb, var(--accent) 70%, #a855f7));
+  background: transparent;
   color: white;
   cursor: pointer;
   z-index: 1000;
-  box-shadow: 
-    0 4px 20px rgba(0, 122, 244, 0.4),
-    0 0 40px rgba(0, 122, 244, 0.2);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
   align-items: center;
@@ -1804,10 +1801,7 @@ body {
 }
 
 .floating-chat-btn:hover {
-  transform: scale(1.1);
-  box-shadow: 
-    0 6px 30px rgba(0, 122, 244, 0.5),
-    0 0 60px rgba(0, 122, 244, 0.3);
+  transform: scale(1.15);
 }
 
 .floating-chat-btn:active {
@@ -1821,32 +1815,37 @@ body {
   justify-content: center;
 }
 
-/* Robot Icon Styles */
+/* Robot Icon Styles - Modern AI Assistant */
 .robot-icon {
   transition: transform 0.2s ease;
+  filter: drop-shadow(0 0 8px rgba(0, 122, 244, 0.5));
 }
 
 .floating-chat-btn:hover .robot-icon {
-  transform: scale(1.05);
+  transform: scale(1.08);
+  filter: drop-shadow(0 0 12px rgba(0, 122, 244, 0.7));
+}
+
+/* Visor glow animation */
+.robot-visor {
+  animation: visorPulse 3s ease-in-out infinite;
+}
+
+@keyframes visorPulse {
+  0%, 100% { opacity: 0.9; }
+  50% { opacity: 1; }
 }
 
 .robot-eye-pupil {
   transition: cx 0.1s ease-out, cy 0.1s ease-out;
-  filter: drop-shadow(0 0 2px currentColor);
 }
 
 .floating-chat-btn:hover .robot-eye-pupil {
-  filter: drop-shadow(0 0 4px currentColor);
+  filter: drop-shadow(0 0 3px white);
 }
 
 .floating-chat-btn-pulse {
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: var(--accent);
-  animation: floating-pulse 2s ease-out infinite;
-  opacity: 0;
+  display: none;
 }
 
 @keyframes floating-pulse {

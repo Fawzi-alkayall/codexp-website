@@ -58,7 +58,7 @@ export function MouseFollower() {
     const handleMouseLeaveWindow = () => setIsVisible(false);
     const handleMouseEnterWindow = () => setIsVisible(true);
 
-    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mousemove', handleMouseMove, { passive: true });
     document.addEventListener('mouseleave', handleMouseLeaveWindow);
     document.addEventListener('mouseenter', handleMouseEnterWindow);
     
@@ -76,18 +76,39 @@ export function MouseFollower() {
     };
   }, [isVisible]);
 
-  // Re-attach hover listeners when DOM changes
+  // Re-attach hover listeners when DOM changes - FIXED memory leak
   useEffect(() => {
-    const observer = new MutationObserver(() => {
+    const hoverEnter = () => setIsHovering(true);
+    const hoverLeave = () => setIsHovering(false);
+    
+    // Track elements we've added listeners to
+    const trackedElements = new WeakSet();
+    
+    const attachListeners = () => {
       const interactiveElements = document.querySelectorAll('a, button, input, .repo-card, .cta-card, .ai-suggestion-btn');
       interactiveElements.forEach(el => {
-        el.addEventListener('mouseenter', () => setIsHovering(true));
-        el.addEventListener('mouseleave', () => setIsHovering(false));
+        if (!trackedElements.has(el)) {
+          el.addEventListener('mouseenter', hoverEnter);
+          el.addEventListener('mouseleave', hoverLeave);
+          trackedElements.add(el);
+        }
       });
+    };
+    
+    // Debounce observer callbacks
+    let timeoutId;
+    const observer = new MutationObserver(() => {
+      clearTimeout(timeoutId);
+      timeoutId = setTimeout(attachListeners, 100);
     });
 
     observer.observe(document.body, { childList: true, subtree: true });
-    return () => observer.disconnect();
+    attachListeners(); // Initial attach
+    
+    return () => {
+      clearTimeout(timeoutId);
+      observer.disconnect();
+    };
   }, []);
 
   // Don't render on touch devices
