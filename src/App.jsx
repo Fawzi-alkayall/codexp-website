@@ -25,6 +25,7 @@ import {
   ServicesSection,
   AboutSection,
   IndustriesSection,
+  TrustedBySection,
   CTASection,
   FAQSection,
   AIChat,
@@ -65,6 +66,7 @@ function Main() {
       <AboutSection />
       <ServicesSection />
       <IndustriesSection />
+      <TrustedBySection />
       <FAQSection />
       <CTASection />
     </main>

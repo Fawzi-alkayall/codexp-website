@@ -4,3 +4,4 @@ export { AboutSection } from './AboutSection';
 export { IndustriesSection } from './IndustriesSection';
 export { CTASection } from './CTASection';
 export { FAQSection } from './FAQSection';
+export { TrustedBySection } from './TrustedBySection';
