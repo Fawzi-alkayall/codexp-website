@@ -82,13 +82,13 @@ export function AnimatedBackground() {
         this.y = Math.random() * canvas.height;
         this.baseX = this.x;
         this.baseY = this.y;
-        this.vx = (Math.random() - 0.5) * 0.3;
-        this.vy = (Math.random() - 0.5) * 0.3;
+        this.vx = (Math.random() - 0.5) * 0.4;
+        this.vy = (Math.random() - 0.5) * 0.4;
         this.baseVx = this.vx;
         this.baseVy = this.vy;
-        this.radius = Math.random() * 1 + 0.5;
+        this.radius = Math.random() * 1.5 + 1;
         this.baseRadius = this.radius;
-        this.opacity = Math.random() * 0.2 + 0.05;
+        this.opacity = Math.random() * 0.4 + 0.15;
         this.pulseSpeed = Math.random() * 0.02 + 0.01;
         this.pulseOffset = Math.random() * Math.PI * 2;
         // Mouse interaction properties
@@ -162,12 +162,12 @@ export function AnimatedBackground() {
         
         // Glow effect
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius * 2, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.radius * 2.5, 0, Math.PI * 2);
         const gradient = ctx.createRadialGradient(
           this.x, this.y, 0,
-          this.x, this.y, this.radius * 2
+          this.x, this.y, this.radius * 2.5
         );
-        gradient.addColorStop(0, `rgba(0, 122, 244, ${this.currentOpacity * 0.15})`);
+        gradient.addColorStop(0, `rgba(0, 122, 244, ${this.currentOpacity * 0.25})`);
         gradient.addColorStop(1, 'transparent');
         ctx.fillStyle = gradient;
         ctx.fill();
