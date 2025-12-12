@@ -82,13 +82,13 @@ export function AnimatedBackground() {
         this.y = Math.random() * canvas.height;
         this.baseX = this.x;
         this.baseY = this.y;
-        this.vx = (Math.random() - 0.5) * 0.5;
-        this.vy = (Math.random() - 0.5) * 0.5;
+        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = (Math.random() - 0.5) * 0.3;
         this.baseVx = this.vx;
         this.baseVy = this.vy;
-        this.radius = Math.random() * 2 + 1;
+        this.radius = Math.random() * 1 + 0.5;
         this.baseRadius = this.radius;
-        this.opacity = Math.random() * 0.5 + 0.2;
+        this.opacity = Math.random() * 0.2 + 0.05;
         this.pulseSpeed = Math.random() * 0.02 + 0.01;
         this.pulseOffset = Math.random() * Math.PI * 2;
         // Mouse interaction properties
@@ -160,14 +160,14 @@ export function AnimatedBackground() {
         ctx.fillStyle = `rgba(0, 122, 244, ${this.currentOpacity})`;
         ctx.fill();
         
-        // Glow effect
+        // Glow effect - very subtle
         ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius * 3, 0, Math.PI * 2);
+        ctx.arc(this.x, this.y, this.radius * 2, 0, Math.PI * 2);
         const gradient = ctx.createRadialGradient(
           this.x, this.y, 0,
-          this.x, this.y, this.radius * 3
+          this.x, this.y, this.radius * 2
         );
-        gradient.addColorStop(0, `rgba(0, 122, 244, ${this.currentOpacity * 0.3})`);
+        gradient.addColorStop(0, `rgba(0, 122, 244, ${this.currentOpacity * 0.15})`);
         gradient.addColorStop(1, 'transparent');
         ctx.fillStyle = gradient;
         ctx.fill();
@@ -185,13 +185,13 @@ export function AnimatedBackground() {
         this.y = canvas.height + 50;
         this.baseX = this.x;
         this.baseY = this.y;
-        this.vy = -(Math.random() * 0.8 + 0.3);
-        this.vx = (Math.random() - 0.5) * 0.3;
+        this.vy = -(Math.random() * 0.5 + 0.2);
+        this.vx = (Math.random() - 0.5) * 0.2;
         this.symbol = codeSymbols[Math.floor(Math.random() * codeSymbols.length)];
-        this.fontSize = Math.random() * 14 + 10;
+        this.fontSize = Math.random() * 8 + 6;
         this.baseFontSize = this.fontSize;
         this.opacity = 0;
-        this.maxOpacity = Math.random() * 0.15 + 0.05;
+        this.maxOpacity = Math.random() * 0.08 + 0.02;
         this.fadeIn = true;
         this.rotation = (Math.random() - 0.5) * 0.5;
         this.rotationAngle = Math.random() * Math.PI * 2;
@@ -287,7 +287,7 @@ export function AnimatedBackground() {
 
     // Draw connections between nearby particles
     const drawConnections = () => {
-      const maxDistance = 150;
+      const maxDistance = 120;
       
       for (let i = 0; i < particles.length; i++) {
         for (let j = i + 1; j < particles.length; j++) {
@@ -296,7 +296,7 @@ export function AnimatedBackground() {
           const distance = Math.sqrt(dx * dx + dy * dy);
           
           if (distance < maxDistance) {
-            let opacity = (1 - distance / maxDistance) * 0.15;
+            let opacity = (1 - distance / maxDistance) * 0.06;
             
             // Brighten connections near mouse
             if (mouseRef.current.isActive && smoothMouse.x !== null) {
@@ -308,7 +308,7 @@ export function AnimatedBackground() {
               );
               if (mouseDist < mouseRadius) {
                 const mouseInfluence = 1 - mouseDist / mouseRadius;
-                opacity = Math.min(0.4, opacity + mouseInfluence * 0.2);
+                opacity = Math.min(0.15, opacity + mouseInfluence * 0.08);
               }
             }
             
@@ -316,7 +316,7 @@ export function AnimatedBackground() {
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
             ctx.strokeStyle = `rgba(0, 122, 244, ${opacity})`;
-            ctx.lineWidth = 0.5;
+            ctx.lineWidth = 0.3;
             ctx.stroke();
           }
         }
