@@ -88,7 +88,7 @@ export function AnimatedBackground() {
         this.baseVy = this.vy;
         this.radius = Math.random() * 2 + 1.5;
         this.baseRadius = this.radius;
-        this.opacity = Math.random() * 0.5 + 0.3;
+        this.opacity = Math.random() * 0.35 + 0.2;
         this.pulseSpeed = Math.random() * 0.02 + 0.01;
         this.pulseOffset = Math.random() * Math.PI * 2;
         // Mouse interaction properties
