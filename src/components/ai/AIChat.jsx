@@ -428,24 +428,103 @@ function formatMessageText(text) {
 }
 
 /**
- * Floating Chat Button Component
- * Shows a persistent chat icon that opens the AI assistant
+ * Floating Chat Button Component - Robot with eyes following mouse
+ * Shows a persistent robot icon that opens the AI assistant
  */
 export function FloatingChatButton() {
   const { openChat, isOpen, hasUnreadMessages, messages } = useAIChat();
+  const [eyePosition, setEyePosition] = useState({ x: 0, y: 0 });
+  const buttonRef = useRef(null);
+  
+  // Track mouse movement for eye animation
+  useEffect(() => {
+    const handleMouseMove = (e) => {
+      if (!buttonRef.current) return;
+      
+      const button = buttonRef.current;
+      const rect = button.getBoundingClientRect();
+      const buttonCenterX = rect.left + rect.width / 2;
+      const buttonCenterY = rect.top + rect.height / 2;
+      
+      // Calculate direction from button center to mouse
+      const deltaX = e.clientX - buttonCenterX;
+      const deltaY = e.clientY - buttonCenterY;
+      
+      // Normalize and limit eye movement (max 3px movement)
+      const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+      const maxMove = 3;
+      const normalizedX = distance > 0 ? (deltaX / distance) * Math.min(maxMove, distance / 50) : 0;
+      const normalizedY = distance > 0 ? (deltaY / distance) * Math.min(maxMove, distance / 50) : 0;
+      
+      setEyePosition({ x: normalizedX, y: normalizedY });
+    };
+    
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => window.removeEventListener('mousemove', handleMouseMove);
+  }, []);
   
   // Don't show the button when chat is open
   if (isOpen) return null;
   
   return (
     <button 
+      ref={buttonRef}
       className={`floating-chat-btn ${hasUnreadMessages ? 'has-notification' : ''}`}
       onClick={() => openChat('')}
       aria-label="Open AI Chat Assistant"
       title="Chat with AI Assistant"
     >
       <div className="floating-chat-btn-inner">
-        <MessageCircle size={28} />
+        {/* Robot SVG with animated eyes */}
+        <svg 
+          width="32" 
+          height="32" 
+          viewBox="0 0 32 32" 
+          fill="none" 
+          xmlns="http://www.w3.org/2000/svg"
+          className="robot-icon"
+        >
+          {/* Antenna */}
+          <circle cx="16" cy="4" r="2" fill="currentColor" opacity="0.8"/>
+          <line x1="16" y1="6" x2="16" y2="10" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+          
+          {/* Robot Head */}
+          <rect x="6" y="10" width="20" height="16" rx="4" fill="currentColor" opacity="0.15"/>
+          <rect x="6" y="10" width="20" height="16" rx="4" stroke="currentColor" strokeWidth="1.5"/>
+          
+          {/* Left Eye Socket */}
+          <circle cx="11" cy="18" r="4" fill="currentColor" opacity="0.1"/>
+          <circle cx="11" cy="18" r="4" stroke="currentColor" strokeWidth="1"/>
+          
+          {/* Left Eye Pupil - Animated */}
+          <circle 
+            cx={11 + eyePosition.x} 
+            cy={18 + eyePosition.y} 
+            r="2" 
+            fill="currentColor"
+            className="robot-eye-pupil"
+          />
+          
+          {/* Right Eye Socket */}
+          <circle cx="21" cy="18" r="4" fill="currentColor" opacity="0.1"/>
+          <circle cx="21" cy="18" r="4" stroke="currentColor" strokeWidth="1"/>
+          
+          {/* Right Eye Pupil - Animated */}
+          <circle 
+            cx={21 + eyePosition.x} 
+            cy={18 + eyePosition.y} 
+            r="2" 
+            fill="currentColor"
+            className="robot-eye-pupil"
+          />
+          
+          {/* Mouth/Speaker grille */}
+          <rect x="10" y="24" width="12" height="1" rx="0.5" fill="currentColor" opacity="0.6"/>
+          
+          {/* Ear panels */}
+          <rect x="3" y="14" width="3" height="8" rx="1" fill="currentColor" opacity="0.3"/>
+          <rect x="26" y="14" width="3" height="8" rx="1" fill="currentColor" opacity="0.3"/>
+        </svg>
         <span className="floating-chat-btn-pulse"></span>
       </div>
       {(hasUnreadMessages || messages.length > 0) && (

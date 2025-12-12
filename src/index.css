@@ -1821,6 +1821,24 @@ body {
   justify-content: center;
 }
 
+/* Robot Icon Styles */
+.robot-icon {
+  transition: transform 0.2s ease;
+}
+
+.floating-chat-btn:hover .robot-icon {
+  transform: scale(1.05);
+}
+
+.robot-eye-pupil {
+  transition: cx 0.1s ease-out, cy 0.1s ease-out;
+  filter: drop-shadow(0 0 2px currentColor);
+}
+
+.floating-chat-btn:hover .robot-eye-pupil {
+  filter: drop-shadow(0 0 4px currentColor);
+}
+
 .floating-chat-btn-pulse {
   position: absolute;
   width: 100%;
