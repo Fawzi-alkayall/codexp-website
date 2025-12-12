@@ -4,12 +4,15 @@ import { useEffect, useRef, useMemo } from 'react';
  * AnimatedBackground Component
  * Creates an immersive, code/AI themed animated background
  * Features floating code symbols, neural network particles, and gradient effects
- * With interactive mouse movement similar to GitHub Spark
+ * With interactive mouse movement similar to GitHub Spark stars
+ * Particles have depth layers and smoothly follow/react to cursor with parallax effect
  */
 export function AnimatedBackground() {
   const canvasRef = useRef(null);
   const mouseRef = useRef({ x: null, y: null, isActive: false });
   const targetMouseRef = useRef({ x: null, y: null });
+  const mouseVelocityRef = useRef({ x: 0, y: 0 });
+  const lastMouseRef = useRef({ x: null, y: null });
   
   // Code symbols and AI-related characters
   const codeSymbols = useMemo(() => [
@@ -27,13 +30,14 @@ export function AnimatedBackground() {
     let particles = [];
     let codeParticles = [];
     
-    // Mouse interaction settings
-    const mouseRadius = 200; // Radius of mouse influence
-    const mouseForce = 0.08; // Strength of mouse attraction/repulsion
-    const returnSpeed = 0.02; // Speed at which particles return to original path
+    // Mouse interaction settings - GitHub Spark style
+    const mouseRadius = 250; // Larger radius of mouse influence
+    const returnSpeed = 0.03; // Speed at which particles return to original path
     
     // Smoothed mouse position for fluid movement
     let smoothMouse = { x: null, y: null };
+    let mouseVelocity = { x: 0, y: 0 };
+    let lastMouse = { x: null, y: null };
     
     // Set canvas size
     const setCanvasSize = () => {
@@ -71,7 +75,7 @@ export function AnimatedBackground() {
     window.addEventListener('touchmove', handleTouchMove);
     window.addEventListener('touchend', handleTouchEnd);
 
-    // Particle class for neural network effect
+    // Particle class for neural network effect with parallax depth
     class Particle {
       constructor() {
         this.reset();
@@ -91,9 +95,20 @@ export function AnimatedBackground() {
         this.opacity = Math.random() * 0.35 + 0.2;
         this.pulseSpeed = Math.random() * 0.02 + 0.01;
         this.pulseOffset = Math.random() * Math.PI * 2;
-        // Mouse interaction properties
+        
+        // Parallax depth layer (0.3 = far/slow, 1.0 = close/fast) - GitHub Spark style
+        this.depth = Math.random() * 0.7 + 0.3;
+        
+        // Mouse interaction properties with momentum
         this.mouseOffsetX = 0;
         this.mouseOffsetY = 0;
+        this.velocityX = 0;
+        this.velocityY = 0;
+        
+        // Adjust properties based on depth (far = smaller, dimmer)
+        this.radius *= this.depth;
+        this.baseRadius = this.radius;
+        this.opacity *= this.depth;
       }
       
       update() {
@@ -102,41 +117,85 @@ export function AnimatedBackground() {
           if (smoothMouse.x === null) {
             smoothMouse.x = targetMouseRef.current.x;
             smoothMouse.y = targetMouseRef.current.y;
+            lastMouse.x = smoothMouse.x;
+            lastMouse.y = smoothMouse.y;
           } else {
-            smoothMouse.x += (targetMouseRef.current.x - smoothMouse.x) * 0.1;
-            smoothMouse.y += (targetMouseRef.current.y - smoothMouse.y) * 0.1;
+            // Track mouse velocity for momentum effect
+            const newX = smoothMouse.x + (targetMouseRef.current.x - smoothMouse.x) * 0.12;
+            const newY = smoothMouse.y + (targetMouseRef.current.y - smoothMouse.y) * 0.12;
+            mouseVelocity.x = newX - smoothMouse.x;
+            mouseVelocity.y = newY - smoothMouse.y;
+            smoothMouse.x = newX;
+            smoothMouse.y = newY;
           }
         }
         
-        // Mouse interaction - particles are pushed away
-        if (mouseRef.current.isActive && smoothMouse.x !== null) {
-          const dx = this.x - smoothMouse.x;
-          const dy = this.y - smoothMouse.y;
+        // GitHub Spark style parallax - particles drift based on mouse position relative to center
+        if (smoothMouse.x !== null) {
+          const centerX = canvas.width / 2;
+          const centerY = canvas.height / 2;
+          
+          // Calculate offset from center (normalized)
+          const offsetX = (smoothMouse.x - centerX) / centerX;
+          const offsetY = (smoothMouse.y - centerY) / centerY;
+          
+          // Parallax movement - deeper particles move more with mouse
+          const parallaxStrength = 30;
+          const targetOffsetX = offsetX * parallaxStrength * this.depth;
+          const targetOffsetY = offsetY * parallaxStrength * this.depth;
+          
+          // Add mouse velocity influence for momentum/drift effect
+          const momentumStrength = 3 * this.depth;
+          const targetVelX = mouseVelocity.x * momentumStrength;
+          const targetVelY = mouseVelocity.y * momentumStrength;
+          
+          // Smooth spring animation toward target
+          this.velocityX += (targetOffsetX - this.mouseOffsetX) * 0.02;
+          this.velocityY += (targetOffsetY - this.mouseOffsetY) * 0.02;
+          
+          // Add momentum from mouse movement
+          this.velocityX += targetVelX * 0.1;
+          this.velocityY += targetVelY * 0.1;
+          
+          // Apply damping for smooth deceleration
+          this.velocityX *= 0.92;
+          this.velocityY *= 0.92;
+          
+          // Update offsets
+          this.mouseOffsetX += this.velocityX;
+          this.mouseOffsetY += this.velocityY;
+          
+          // Additional attraction effect when mouse is near
+          const dx = (this.baseX + this.mouseOffsetX) - smoothMouse.x;
+          const dy = (this.baseY + this.mouseOffsetY) - smoothMouse.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           
           if (distance < mouseRadius) {
-            // Calculate repulsion force (stronger when closer)
+            // Subtle attraction/repulsion wave effect
             const force = (mouseRadius - distance) / mouseRadius;
             const angle = Math.atan2(dy, dx);
             
-            // Push particle away from mouse
-            this.mouseOffsetX += Math.cos(angle) * force * mouseForce * 15;
-            this.mouseOffsetY += Math.sin(angle) * force * mouseForce * 15;
+            // Gentle push away from cursor
+            this.velocityX += Math.cos(angle) * force * 0.3 * this.depth;
+            this.velocityY += Math.sin(angle) * force * 0.3 * this.depth;
             
             // Increase size slightly when near mouse
-            this.radius = this.baseRadius * (1 + force * 0.5);
+            this.radius = this.baseRadius * (1 + force * 0.4);
           } else {
             this.radius = this.baseRadius;
           }
         } else {
+          // Gradually return to zero when no mouse
+          this.velocityX *= 0.95;
+          this.velocityY *= 0.95;
+          this.mouseOffsetX += this.velocityX;
+          this.mouseOffsetY += this.velocityY;
+          this.mouseOffsetX *= 0.98;
+          this.mouseOffsetY *= 0.98;
           this.radius = this.baseRadius;
         }
         
-        // Gradually return mouse offset to zero (spring back effect)
-        this.mouseOffsetX *= 0.95;
-        this.mouseOffsetY *= 0.95;
-        
-        // Apply base velocity
+        // Apply base velocity (autonomous movement)
         this.baseX += this.baseVx;
         this.baseY += this.baseVy;
         
@@ -174,7 +233,7 @@ export function AnimatedBackground() {
       }
     }
 
-    // Code symbol particle class
+    // Code symbol particle class with parallax depth
     class CodeParticle {
       constructor() {
         this.reset();
@@ -195,16 +254,61 @@ export function AnimatedBackground() {
         this.fadeIn = true;
         this.rotation = (Math.random() - 0.5) * 0.5;
         this.rotationAngle = Math.random() * Math.PI * 2;
-        // Mouse interaction properties
+        
+        // Parallax depth layer (0.2 = far/slow, 1.0 = close/fast)
+        this.depth = Math.random() * 0.8 + 0.2;
+        
+        // Mouse interaction properties with momentum
         this.mouseOffsetX = 0;
         this.mouseOffsetY = 0;
+        this.velocityX = 0;
+        this.velocityY = 0;
+        
+        // Adjust properties based on depth
+        this.fontSize *= this.depth;
+        this.baseFontSize = this.fontSize;
+        this.maxOpacity *= this.depth;
       }
       
       update() {
-        // Mouse interaction - code particles swirl around mouse
-        if (mouseRef.current.isActive && smoothMouse.x !== null) {
-          const dx = this.x - smoothMouse.x;
-          const dy = this.y - smoothMouse.y;
+        // GitHub Spark style parallax - code particles drift with mouse
+        if (smoothMouse.x !== null) {
+          const centerX = canvas.width / 2;
+          const centerY = canvas.height / 2;
+          
+          // Calculate offset from center (normalized)
+          const offsetX = (smoothMouse.x - centerX) / centerX;
+          const offsetY = (smoothMouse.y - centerY) / centerY;
+          
+          // Parallax movement
+          const parallaxStrength = 40;
+          const targetOffsetX = offsetX * parallaxStrength * this.depth;
+          const targetOffsetY = offsetY * parallaxStrength * this.depth;
+          
+          // Add mouse velocity influence for momentum effect
+          const momentumStrength = 4 * this.depth;
+          const targetVelX = mouseVelocity.x * momentumStrength;
+          const targetVelY = mouseVelocity.y * momentumStrength;
+          
+          // Smooth spring animation toward target
+          this.velocityX += (targetOffsetX - this.mouseOffsetX) * 0.015;
+          this.velocityY += (targetOffsetY - this.mouseOffsetY) * 0.015;
+          
+          // Add momentum from mouse movement
+          this.velocityX += targetVelX * 0.08;
+          this.velocityY += targetVelY * 0.08;
+          
+          // Apply damping
+          this.velocityX *= 0.9;
+          this.velocityY *= 0.9;
+          
+          // Update offsets
+          this.mouseOffsetX += this.velocityX;
+          this.mouseOffsetY += this.velocityY;
+          
+          // Swirl effect when mouse is near
+          const dx = (this.baseX + this.mouseOffsetX) - smoothMouse.x;
+          const dy = (this.baseY + this.mouseOffsetY) - smoothMouse.y;
           const distance = Math.sqrt(dx * dx + dy * dy);
           
           if (distance < mouseRadius * 1.2) {
@@ -212,26 +316,29 @@ export function AnimatedBackground() {
             const angle = Math.atan2(dy, dx);
             
             // Create a swirling effect - push away with slight rotation
-            const swirlAngle = angle + Math.PI * 0.3;
-            this.mouseOffsetX += Math.cos(swirlAngle) * force * mouseForce * 10;
-            this.mouseOffsetY += Math.sin(swirlAngle) * force * mouseForce * 10;
+            const swirlAngle = angle + Math.PI * 0.25;
+            this.velocityX += Math.cos(swirlAngle) * force * 0.4 * this.depth;
+            this.velocityY += Math.sin(swirlAngle) * force * 0.4 * this.depth;
             
             // Increase opacity and size when near mouse
             this.fontSize = this.baseFontSize * (1 + force * 0.3);
-            this.maxOpacity = Math.min(0.3, this.maxOpacity + force * 0.02);
+            this.maxOpacity = Math.min(0.25, this.maxOpacity + force * 0.01);
             
             // Add extra rotation when near mouse
-            this.rotationAngle += force * 0.05;
+            this.rotationAngle += force * 0.03 * this.depth;
           } else {
             this.fontSize = this.baseFontSize;
           }
         } else {
+          // Gradually return to zero when no mouse
+          this.velocityX *= 0.93;
+          this.velocityY *= 0.93;
+          this.mouseOffsetX += this.velocityX;
+          this.mouseOffsetY += this.velocityY;
+          this.mouseOffsetX *= 0.97;
+          this.mouseOffsetY *= 0.97;
           this.fontSize = this.baseFontSize;
         }
-        
-        // Gradually return mouse offset to zero
-        this.mouseOffsetX *= 0.92;
-        this.mouseOffsetY *= 0.92;
         
         // Update base position
         this.baseY += this.vy;
