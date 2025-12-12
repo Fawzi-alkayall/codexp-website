@@ -1267,24 +1267,26 @@ body {
   width: 120px;
   height: 80px;
   padding: 12px;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 12px;
 }
 
 .partner-logo {
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
-  filter: brightness(0) invert(1); /* Makes logos white for dark theme */
-  opacity: 0.9;
+  opacity: 0.85;
   transition: all 0.3s ease;
+  border-radius: 8px;
 }
 
-.light-theme .partner-logo {
-  filter: brightness(0); /* Makes logos dark for light theme */
+.partner-card:hover .partner-logo-wrapper {
+  background: rgba(255, 255, 255, 0.1);
 }
 
 .partner-card:hover .partner-logo {
   opacity: 1;
-  filter: none; /* Show original colors on hover */
+  transform: scale(1.05);
 }
 
 .partner-name {
