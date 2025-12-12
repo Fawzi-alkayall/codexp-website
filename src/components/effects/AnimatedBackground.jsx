@@ -296,7 +296,7 @@ export function AnimatedBackground() {
           const distance = Math.sqrt(dx * dx + dy * dy);
           
           if (distance < maxDistance) {
-            let opacity = (1 - distance / maxDistance) * 0.06;
+            let opacity = (1 - distance / maxDistance) * 0.12;
             
             // Brighten connections near mouse
             if (mouseRef.current.isActive && smoothMouse.x !== null) {
@@ -308,7 +308,7 @@ export function AnimatedBackground() {
               );
               if (mouseDist < mouseRadius) {
                 const mouseInfluence = 1 - mouseDist / mouseRadius;
-                opacity = Math.min(0.15, opacity + mouseInfluence * 0.08);
+                opacity = Math.min(0.25, opacity + mouseInfluence * 0.12);
               }
             }
             
@@ -316,7 +316,7 @@ export function AnimatedBackground() {
             ctx.moveTo(particles[i].x, particles[i].y);
             ctx.lineTo(particles[j].x, particles[j].y);
             ctx.strokeStyle = `rgba(0, 122, 244, ${opacity})`;
-            ctx.lineWidth = 0.3;
+            ctx.lineWidth = 0.4;
             ctx.stroke();
           }
         }
