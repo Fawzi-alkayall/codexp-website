@@ -13,7 +13,7 @@ const PARTNERS = [
   {
     id: 'sky-jordan',
     name: 'Sky Jordan For Travel Solutions',
-    logo: 'https://sky-jordan.com/img/logo.png',
+    logo: '/partners/sky-jordan-logo.png',
     url: 'https://sky-jordan.com',
   },
   {
@@ -67,6 +67,10 @@ const PartnerCard = memo(function PartnerCard({ partner }) {
           alt={`${partner.name} logo`}
           className="partner-logo"
           loading="lazy"
+          onError={(e) => {
+            e.target.style.display = 'none';
+            e.target.parentElement.innerHTML = `<span class="partner-logo-fallback">${partner.name.charAt(0)}</span>`;
+          }}
         />
       </div>
       <span className="partner-name">{partner.name}</span>
