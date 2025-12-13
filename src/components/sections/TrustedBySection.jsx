@@ -8,7 +8,7 @@ const PARTNERS = [
     id: 'rpe',
     name: 'RPE',
     logo: 'https://portal.rpe.ae/assets/logo.a78afc12.png',
-    url: 'https://portal.rpe.ae',
+    url: 'http://rpe.ae/',
   },
   {
     id: 'sky-jordan',
